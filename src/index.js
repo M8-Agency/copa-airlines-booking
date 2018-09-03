@@ -1,17 +1,15 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, link } from "react-router-dom";
 import Validator from "validatorjs";
 import PropTypes from "prop-types";
 import queryString from "query-string";
-import "react-select/dist/react-select.css";
 import "react-datepicker/dist/react-datepicker.css";
 import BookingUI from './BookingUI'
 import moment from "moment";
 
 class Booking extends Component {
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props);
+    
     const today = moment();
     const later = moment().add(5, "days");
     this.tidyDestinations = null;
@@ -95,7 +93,6 @@ class Booking extends Component {
   }
   handleSubmit = (event) => {
     event.preventDefault();
-    console.log('handleSubmit')
     //Validar
     const data = {
       cabinClass: this.state.cabinClass,
@@ -105,16 +102,16 @@ class Booking extends Component {
       guestTypes0amount: this.state.guestTypes0amount,
       guestTypes1amount: this.state.guestTypes1amount,
       guestTypes2amount: this.state.guestTypes2amount,
-      inboundOptionDeparture: new Array(
+      inboundOptionDeparture: [
         this.state.inboundOptionDepartureYear,
         this.state.inboundOptionDepartureMonth,
         this.state.inboundOptionDepartureDay
-      ),
-      outboundOptionDeparture: new Array(
+      ],
+      outboundOptionDeparture: [
         this.state.outboundOptionDepartureYear,
         this.state.outboundOptionDepartureMonth,
         this.state.outboundOptionDepartureDay
-      )
+      ]
     };
 
     const rules = {
@@ -155,15 +152,18 @@ class Booking extends Component {
       function() {
         if (data.origin !== data.destination) {
           let extraparams = `d1=PRO_MDCO_US_en_2017`;
-          if (window.location.search != "") {
+          if (window.location.search !== "") {
             const parsed = queryString.parse(window.location.search);
             extraparams = queryString.stringify(parsed);
           }
 
           // prettier-ignore
+          
+          (this.props.onSearch) && this.props.onSearch()
           window.open(
-            `${this.state.formUrl}cabinClass=${this.state.cabinClass}&flexibleSearch=${this.state.flexibleSearch}&guestTypes[0].amount=${this.state.guestTypes0amount}&guestTypes[0].type=ADT&guestTypes[1].amount=${this.state.guestTypes1amount}&guestTypes[1].type=CNN&guestTypes[2].amount=${this.state.guestTypes2amount}&guestTypes[2].type=INF&inboundOption.departureDay=${this.state.inboundOptionDepartureDay}&inboundOption.departureMonth=${this.state.inboundOptionDepartureMonth}&inboundOption.departureYear=${this.state.inboundOptionDepartureYear}&inboundOption.destinationLocationCode=${this.state.origin}&inboundOption.originLocationCode=${this.state.destination}&lang=${this.props.locale}&outboundOption.departureDay=${this.state.outboundOptionDepartureDay}&outboundOption.departureMonth=${this.state.outboundOptionDepartureMonth}&outboundOption.departureYear=${this.state.outboundOptionDepartureYear}&outboundOption.destinationLocationCode=${this.state.destination}&outboundOption.originLocationCode=${this.state.origin}&pos=CMGS&tripType=RT&${extraparams}`
+            `${this.state.formUrl}cabinClass=${this.state.cabinClass}&flexibleSearch=${this.state.flexibleSearch}&guestTypes[0].amount=${this.state.guestTypes0amount}&guestTypes[0].type=ADT&guestTypes[1].amount=${this.state.guestTypes1amount}&guestTypes[1].type=CNN&guestTypes[2].amount=${this.state.guestTypes2amount}&guestTypes[2].type=INF&inboundOption.departureDay=${this.state.inboundOptionDepartureDay}&inboundOption.departureMonth=${this.state.inboundOptionDepartureMonth}&inboundOption.departureYear=${this.state.inboundOptionDepartureYear}&inboundOption.destinationLocationCode=${this.state.origin}&inboundOption.originLocationCode=${this.state.destination}&lang=${this.props.locale}&outboundOption.departureDay=${this.state.outboundOptionDepartureDay}&outboundOption.departureMonth=${this.state.outboundOptionDepartureMonth}&outboundOption.departureYear=${this.state.outboundOptionDepartureYear}&outboundOption.destinationLocationCode=${this.state.destination}&outboundOption.originLocationCode=${this.state.origin}&pos=CMGS&tripType=RT&${extraparams}`            
           );
+
         } else {
           this.setState({
             error:
@@ -186,101 +186,110 @@ class Booking extends Component {
         value: item.value
       };
     });
-
-    return (<BookingUI 
-      onSubmit={ this.handleSubmit } 
-      copy={ this.props.copy }
-      {...this.state } 
-      
-      handleOriginChange = { this.handleOriginChange}
-      tidyDestinations = { this.tidyDestinations}
-      handleDestinationChange = { this.handleDestinationChange }
-      handleStartDateChange = { this.handleStartDateChange }
-      handleEndDateChange = { this.handleEndDateChange }
-      handleCabinClassChange = { this.handleCabinClassChange }
-      handleAdultGuestChange = { this.handleAdultGuestChange }
-      handleChildrenGuestChange = { this.handleChildrenGuestChange }
-      handleInfantGuestChange = { this.handleInfantGuestChange }
+    
+    if(document.location.pathname.indexOf('/upload') < 0){
+      return (<BookingUI 
+        onSubmit={ this.handleSubmit } 
+        copy={ this.props.copy }
+        {...this.state } 
+        
+        handleOriginChange = { this.handleOriginChange}
+        tidyDestinations = { this.tidyDestinations}
+        handleDestinationChange = { this.handleDestinationChange }
+        handleStartDateChange = { this.handleStartDateChange }
+        handleEndDateChange = { this.handleEndDateChange }
+        handleCabinClassChange = { this.handleCabinClassChange }
+        handleAdultGuestChange = { this.handleAdultGuestChange }
+        handleChildrenGuestChange = { this.handleChildrenGuestChange }
+        handleInfantGuestChange = { this.handleInfantGuestChange }
       />);
+    }else{
+      return <div/>
+    }
+    
+
   }
 }
 
 const destinations = [
-  { label: "Aruba, AW | AUA", value: "AUA" },
-  { label: "Asunción, PY | ASU", value: "ASU" },
-  { label: "Barranquilla, CO | BAQ", value: "BAQ" },
-  { label: "Belice, BZ | BZE", value: "BZE" },
-  { label: "Belo Horizonte, BR | BHZ", value: "CNF" },
-  { label: "Bogotá, CO | BOG", value: "BOG" },
-  { label: "Boston, US | BOS", value: "BOS" },
-  { label: "Brasilia, BR | BSB", value: "BSB" },
-  { label: "Bucaramanga, CO | BGA", value: "BGA" },
-  { label: "Buenos Aires, AR | BUE", value: "EZE" },
-  { label: "Cali, CO | CLO", value: "CLO" },
-  { label: "Cancún, MX | CUN", value: "CUN" },
-  { label: "Caracas, VE | CCS", value: "CCS" },
-  { label: "Cartagena, CO | CTG", value: "CTG" },
-  { label: "Chicago, US | CHI", value: "ORD" },
-  { label: "Chiclayo, PE | CIX", value: "CIX" },
-  { label: "Córdoba, AR | COR", value: "COR" },
-  { label: "Curazao, AN | CUR", value: "CUR" },
-  { label: "David, PA | DAV", value: "DAV" },
-  { label: "Fort Lauderdale, US | FLL", value: "FLL" },
-  { label: "Georgetown, GY | GEO", value: "GEO" },
-  { label: "Guadalajara, MX | GDL", value: "GDL" },
-  { label: "Guatemala, GT | GUA", value: "GUA" },
-  { label: "Guayaquil, EC | GYE", value: "GYE" },
-  { label: "Holguín, CU | HOG", value: "HOG" },
-  { label: "Kingston, JM | KIN", value: "KIN" },
-  { label: "La Habana, CU | HAV", value: "HAV" },
-  { label: "Las Vegas, US | LAS", value: "LAS" },
-  { label: "Liberia, CR | LIR", value: "LIR" },
-  { label: "Lima, PE | LIM", value: "LIM" },
-  { label: "Los Ángeles, US | LAX", value: "LAX" },
-  { label: "Managua, NI | MGA", value: "MGA" },
-  { label: "Manaus, BR | MAO", value: "MAO" },
-  { label: "Maracaibo, VE | MAR", value: "MAR" },
-  { label: "Medellín, CO | MDE", value: "MDE" },
-  { label: "Mendoza, AR | MDZ", value: "MDZ" },
-  { label: "México - Ciudad, MX | MEX", value: "MEX" },
-  { label: "Miami, US | MIA", value: "MIA" },
-  { label: "Montego Bay, JM | MBJ", value: "MBJ" },
-  { label: "Monterrey, MX | MTY", value: "MTY" },
-  { label: "Montevideo, UY | MVD", value: "MVD" },
-  { label: "Montreal, CA | YUL", value: "YUL" },
-  { label: "Nassau, BS | NAS", value: "NAS" },
-  { label: "Nueva Orleáns, US | MSY", value: "MSY" },
-  { label: "Nueva York, US | NYC", value: "JFK" },
-  { label: "Orlando, US | ORL", value: "MCO" },
-  { label: "Panamá, PA | PTY", value: "PTY" },
-  { label: "Pereira, CO | PEI", value: "PEI" },
-  { label: "Porto Alegre, BR | POA", value: "POA" },
-  { label: "Puerto España, TT | POS", value: "POS" },
-  { label: "Puerto Príncipe, HT | PAP", value: "PAP" },
-  { label: "Punta Cana, DO | PUJ", value: "PUJ" },
-  { label: "Quito, EC | UIO", value: "UIO" },
-  { label: "Recife, BR | REC", value: "REC" },
-  { label: "Río de Janeiro, BR | RIO", value: "GIG" },
-  { label: "Rosario, AR | ROS", value: "ROS" },
-  { label: "San Andrés Isla, CO | ADZ", value: "ADZ" },
-  { label: "San Francisco, US | SFO", value: "SFO" },
-  { label: "San José, CR | SJO", value: "SJO" },
-  { label: "San Juan, PR | SJU", value: "SJU" },
-  { label: "San Pedro Sula, HN | SAP", value: "SAP" },
-  { label: "San Salvador, SV | SAL", value: "SAL" },
-  { label: "Santa Clara, CU | SNU", value: "SNU" },
-  { label: "Santa Cruz, BO | SRZ", value: "VVI" },
-  { label: "Santiago de Chile, CL | SCL", value: "SCL" },
-  { label: "Santiago de los Caballeros, DO | STI", value: "STI" },
-  { label: "Santo Domingo, DO | SDQ", value: "SDQ" },
-  { label: "Sao Paulo, BR | SAO", value: "GRU" },
-  { label: "St Maarten, AN | SXM", value: "SXM" },
-  { label: "Tampa, US | TPA", value: "TPA" },
-  { label: "Tegucigalpa, HN | TGU", value: "TGU" },
-  { label: "Toronto, CA | YTO", value: "YYZ" },
-  { label: "Valencia, VE | VLN", value: "VLN" },
-  { label: "Washington Dulles, US | WAS", value: "IAD" },
-  { label: "Denver, US | DEN", value: "DEN" }
+  { label: "Aruba, AW | AUA", value: "AUA" }
+  ,{ label: "Asunción, PY | ASU", value: "ASU" }
+  ,{ label: "Barranquilla, CO | BAQ", value: "BAQ" }
+  ,{ label: "Belice, BZ | BZE", value: "BZE" }
+  ,{ label: "Belo Horizonte, BR | BHZ", value: "CNF" }
+  ,{ label: "Bogotá, CO | BOG", value: "BOG" }
+  ,{ label: "Boston, US | BOS", value: "BOS" }
+  ,{ label: "Brasilia, BR | BSB", value: "BSB" }
+  ,{ label: "Bucaramanga, CO | BGA", value: "BGA" }
+  ,{ label: "Buenos Aires, AR | BUE", value: "EZE" }
+  ,{ label: "Cali, CO | CLO", value: "CLO" }
+  ,{ label: "Cancún, MX | CUN", value: "CUN" }
+  ,{ label: "Caracas, VE | CCS", value: "CCS" }
+  ,{ label: "Cartagena, CO | CTG", value: "CTG" }
+  ,{ label: "Chicago, US | CHI", value: "ORD" }
+  ,{ label: "Chiclayo, PE | CIX", value: "CIX" }
+  ,{ label: "Córdoba, AR | COR", value: "COR" }
+  ,{ label: "Curazao, AN | CUR", value: "CUR" }
+  ,{ label: "David, PA | DAV", value: "DAV" }
+  ,{ label: "Fort Lauderdale, US | FLL", value: "FLL" }
+  ,{ label: "Georgetown, GY | GEO", value: "GEO" }
+  ,{ label: "Guadalajara, MX | GDL", value: "GDL" }
+  ,{ label: "Guatemala, GT | GUA", value: "GUA" }
+  ,{ label: "Guayaquil, EC | GYE", value: "GYE" }
+  ,{ label: "Holguín, CU | HOG", value: "HOG" }
+  ,{ label: "Kingston, JM | KIN", value: "KIN" }
+  ,{ label: "La Habana, CU | HAV", value: "HAV" }
+  ,{ label: "Las Vegas, US | LAS", value: "LAS" }
+  ,{ label: "Liberia, CR | LIR", value: "LIR" }
+  ,{ label: "Lima, PE | LIM", value: "LIM" }
+  ,{ label: "Los Ángeles, US | LAX", value: "LAX" }
+  ,{ label: "Managua, NI | MGA", value: "MGA" }
+  ,{ label: "Manaus, BR | MAO", value: "MAO" }
+  ,{ label: "Maracaibo, VE | MAR", value: "MAR" }
+  ,{ label: "Medellín, CO | MDE", value: "MDE" }
+  ,{ label: "Mendoza, AR | MDZ", value: "MDZ" }
+  ,{ label: "México - Ciudad, MX | MEX", value: "MEX" }
+  ,{ label: "Miami, US | MIA", value: "MIA" }
+  ,{ label: "Montego Bay, JM | MBJ", value: "MBJ" }
+  ,{ label: "Monterrey, MX | MTY", value: "MTY" }
+  ,{ label: "Montevideo, UY | MVD", value: "MVD" }
+  ,{ label: "Montreal, CA | YUL", value: "YUL" }
+  ,{ label: "Nassau, BS | NAS", value: "NAS" }
+  ,{ label: "Nueva Orleáns, US | MSY", value: "MSY" }
+  ,{ label: "Nueva York, US | NYC", value: "JFK" }
+  ,{ label: "Orlando, US | ORL", value: "MCO" }
+  ,{ label: "Panamá, PA | PTY", value: "PTY" }
+  ,{ label: "Pereira, CO | PEI", value: "PEI" }
+  ,{ label: "Porto Alegre, BR | POA", value: "POA" }
+  ,{ label: "Puerto España, TT | POS", value: "POS" }
+  ,{ label: "Puerto Príncipe, HT | PAP", value: "PAP" }
+  ,{ label: "Punta Cana, DO | PUJ", value: "PUJ" }
+  ,{ label: "Quito, EC | UIO", value: "UIO" }
+  ,{ label: "Recife, BR | REC", value: "REC" }
+  ,{ label: "Río de Janeiro, BR | RIO", value: "GIG" }
+  ,{ label: "Rosario, AR | ROS", value: "ROS" }
+  ,{ label: "San Andrés Isla, CO | ADZ", value: "ADZ" }
+  ,{ label: "San Francisco, US | SFO", value: "SFO" }
+  ,{ label: "San José, CR | SJO", value: "SJO" }
+  ,{ label: "San Juan, PR | SJU", value: "SJU" }
+  ,{ label: "San Pedro Sula, HN | SAP", value: "SAP" }
+  ,{ label: "San Salvador, SV | SAL", value: "SAL" }
+  ,{ label: "Santa Clara, CU | SNU", value: "SNU" }
+  ,{ label: "Santa Cruz, BO | SRZ", value: "VVI" }
+  ,{ label: "Santiago de Chile, CL | SCL", value: "SCL" }
+  ,{ label: "Santiago de los Caballeros, DO | STI", value: "STI" }
+  ,{ label: "Santo Domingo, DO | SDQ", value: "SDQ" }
+  ,{ label: "Sao Paulo, BR | SAO", value: "GRU" }
+  ,{ label: "St Maarten, AN | SXM", value: "SXM" }
+  ,{ label: "Tampa, US | TPA", value: "TPA" }
+  ,{ label: "Tegucigalpa, HN | TGU", value: "TGU" }
+  ,{ label: "Toronto, CA | YTO", value: "YYZ" }
+  ,{ label: "Valencia, VE | VLN", value: "VLN" }
+  ,{ label: "Washington Dulles, US | WAS", value: "IAD" }
+  ,{ label: "Denver, US | DEN", value: "DEN" }
+  ,{ label: "Salvador, BR | SSA", value: "SSA" }
+  ,{ label: "Fortaleza, BR | FOR", value: "FOR" }
+  ,{ label: "Bridgetown, BB | BGI", value: "BGI" }
 ]
 
 const copy = {
@@ -298,7 +307,8 @@ const copy = {
 Booking.propTypes = {
   locale: PropTypes.oneOf(['en','es','pt']),
   copy: PropTypes.object,
-  destinations: PropTypes.array
+  destinations: PropTypes.array,
+  onSearch : PropTypes.func
 };
 
 Booking.defaultProps = {
