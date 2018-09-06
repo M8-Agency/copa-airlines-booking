@@ -79,7 +79,7 @@ const BookingUI = (props) => (
                     </div>                
                 </div>
                 <div className="row">
-                    <div className="col-xs-6 col-sm-12 col-md-4">
+                    <div className="col-xs-12 col-sm-6 col-md-4">
                         <div className="Booking__clases">
                             <label>
                                 <input
@@ -103,7 +103,7 @@ const BookingUI = (props) => (
                             </label>                        
                         </div>
                     </div>
-                    <div className="col-xs-6 col-sm-12 col-md-8 container-passengers">
+                    <div className="col-xs-12 col-sm-6 col-md-8 container-passengers">
                         <div className="Booking__adultos">
                             {props.copy.adults} (12+)
                             <select
