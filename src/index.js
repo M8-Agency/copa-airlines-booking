@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Validator from "validatorjs";
 import PropTypes from "prop-types";
 import queryString from "query-string";
+import "react-select/dist/react-select.css";
 import "react-datepicker/dist/react-datepicker.css";
 import BookingUI from './BookingUI'
 import moment from "moment";
@@ -294,6 +295,7 @@ const destinations = [
 
 const copy = {
   'buy' : 'Buy your ticket and earn points',
+  'info' : 'test',  
   'from' : 'From',
   'to' : 'To',
   'economy_class' : 'Economy Class',

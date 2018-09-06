@@ -159,11 +159,7 @@ const BookingUI = (props) => (
                 </div>
                 <div className="row">
                     <div className="col-sm-12 align-center">
-                        <input
-                        className="Booking__submit"
-                        type="submit"
-                        value={props.copy.lbl_submit}
-                        />
+                        <button className="Booking__submit">{props.copy.lbl_submit}</button>
                         <br/>
                         <p>{ props.copy.info_compra }</p>                    
                     </div>
