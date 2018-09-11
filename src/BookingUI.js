@@ -105,7 +105,7 @@ const BookingUI = (props) => (
                     </div>
                     <div className="col-xs-12 col-sm-6 col-md-8 container-passengers">
                         <div className="Booking__adultos">
-                            {props.copy.adults} (12+)
+                            {props.copy.adults}
                             <select
                             value={props.guestTypes0amount}
                             onChange={props.handleAdultGuestChange}
@@ -122,7 +122,7 @@ const BookingUI = (props) => (
                             </select>
                         </div>       
                         <div className="Booking__ninos">
-                            {props.copy.children} (2-11)
+                            {props.copy.children}
                             <select
                             value={props.guestTypes1amount}
                             onChange={props.handleChildrenGuestChange}
@@ -139,7 +139,7 @@ const BookingUI = (props) => (
                         </div>
 
                         <div className="Booking__infantes">
-                            {props.copy.infants} (0-1)
+                            {props.copy.infants}
                             <select
                             value={props.guestTypes2amount}
                             onChange={props.handleInfantGuestChange}
